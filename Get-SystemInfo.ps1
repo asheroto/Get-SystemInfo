@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.0.0
+.VERSION 1.0.1
 
 .GUID 21f7b5b3-f9bd-4611-a846-9372c3a89275
 
@@ -14,6 +14,7 @@
 
 .RELEASENOTES
 [Version 1.0.0] - Initial Release.
+[Version 1.0.1] - Added TPM information support.
 
 #>
 
@@ -34,7 +35,7 @@
 .PARAMETER Help
     Shows detailed help information for the script.
 .NOTES
-    Version      : 1.0.0
+    Version      : 1.0.1
     Created by   : asheroto
 .LINK
     Project Site: https://github.com/asheroto/Get-SystemInfo
@@ -44,11 +45,12 @@ param (
     [switch]$CheckForUpdate,
     [switch]$UpdateSelf,
     [switch]$Version,
-    [switch]$Help
+    [switch]$Help,
+    [string]$OutputFile
 )
 
 # Script information
-$CurrentVersion = '1.0.0'
+$CurrentVersion = '1.0.1'
 $RepoOwner = 'asheroto'
 $RepoName = 'Get-SystemInfo'
 $PowerShellGalleryName = 'Get-SystemInfo'
@@ -236,6 +238,19 @@ function Get-SystemInfo {
     Write-Header "Serial Number" $bios.SerialNumber
     Write-Header "Firmware Manufacturer" $bios.Manufacturer
     Write-Header "Firmware Version" $bios.SMBIOSBIOSVersion
+
+    # TPM
+    Write-Section "TPM Information"
+    $tpm = Get-CimInstance -Namespace "root\cimv2\security\microsofttpm" -ClassName Win32_Tpm
+
+    if ($tpm) {
+        Write-Header "TPM Activated" $tpm.IsActivated_InitialValue
+        Write-Header "TPM Enabled" $tpm.IsEnabled_InitialValue
+        Write-Header "TPM Owned" $tpm.IsOwned_InitialValue
+        Write-Header "TPM Version" ($tpm.SpecVersion -split ',')[0]
+    } else {
+        Write-Output "No TPM detected."
+    }
 
     # OS Details
     Write-Section "OS Details"
