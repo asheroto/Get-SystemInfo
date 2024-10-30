@@ -1,3 +1,10 @@
+[![Release](https://img.shields.io/github/v/release/asheroto/Get-SystemInfo)](https://github.com/asheroto/Get-SystemInfo/releases)
+[![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/asheroto/Get-SystemInfo)](https://github.com/asheroto/Get-SystemInfo/releases)
+[![GitHub Downloads - All Releases](https://img.shields.io/github/downloads/asheroto/Get-SystemInfo/total)](https://github.com/asheroto/Get-SystemInfo/releases)
+[![GitHub Sponsor](https://img.shields.io/github/sponsors/asheroto?label=Sponsor&logo=GitHub)](https://github.com/sponsors/asheroto?frequency=one-time&sponsor=asheroto)
+<a href="https://ko-fi.com/asheroto"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Ko-Fi Button" height="20px"></a>
+<a href="https://www.buymeacoffee.com/asheroto"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=Get-SystemInfo&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff)" height="40px"></a>
+
 # Get-SystemInfo
 
 This PowerShell script provides comprehensive system diagnostics by gathering detailed information on system configuration, hardware, network, and operating status. It is designed for Windows environments and is particularly useful for IT professionals and support staff who need rapid insight into system specs and performance.
