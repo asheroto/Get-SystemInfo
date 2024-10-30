@@ -1,100 +1,47 @@
 <#PSScriptInfo
 
-.VERSION 4.2.0
+.VERSION 1.0.0
 
-.GUID 3b581edb-5d90-4fa1-ba15-4f2377275463
+.GUID 21f7b5b3-f9bd-4611-a846-9372c3a89275
 
-.AUTHOR asheroto, 1ckov, MisterZeus, ChrisTitusTech, uffemcev, MatthiasGuelck, o-l-a-v
+.AUTHOR asheroto
 
 .COMPANYNAME asheroto
 
-.TAGS PowerShell Windows winget win get install installer fix script setup
+.TAGS PowerShell Windows get system info information hardware firmware details disk memory network pending reboot usage shutdown event last
 
-.PROJECTURI https://github.com/asheroto/winget-install
+.PROJECTURI https://github.com/asheroto/Get-SystemInfo
 
 .RELEASENOTES
-[Version 0.0.1] - Initial Release.
-[Version 0.0.2] - Implemented function to get the latest version of winget and its license.
-[Version 0.0.3] - Signed file for PSGallery.
-[Version 0.0.4] - Changed URI to grab latest release instead of releases and preleases.
-[Version 0.0.5] - Updated version number of dependencies.
-[Version 1.0.0] - Major refactor code, see release notes for more information.
-[Version 1.0.1] - Fixed minor bug where version 2.8 was hardcoded in URL.
-[Version 1.0.2] - Hardcoded UI Xaml version 2.8.4 as a failsafe in case the API fails. Added CheckForUpdates, Version, Help functions. Various bug fixes.
-[Version 1.0.3] - Added error message to catch block. Fixed bug where appx package was not being installed.
-[Version 1.0.4] - MisterZeus optimized code for readability.
-[Version 2.0.0] - Major refactor. Reverted to UI.Xaml 2.7.3 for stability. Adjusted script to fix install issues due to winget changes (thank you ChrisTitusTech). Added in all architecture support.
-[Version 2.0.1] - Renamed repo and URL references from winget-installer to winget-install. Added extra space after the last line of output.
-[Version 2.0.2] - Adjusted CheckForUpdates to include Install-Script instructions and extra spacing.
-[Version 2.1.0] - Added alternate method/URL for dependencies in case the main URL is down. Fixed licensing issue when winget is installed on Server 2022.
-[Version 2.1.1] - Switched primary/alternate methods. Added Cleanup function to avoid errors when cleaning up temp files. Added output of URL for alternate method. Suppressed Add-AppxProvisionedPackage output. Improved success message. Improved verbiage. Improve PS script comments. Added check if the URL is empty. Moved display of URL beneath the check.
-[Version 3.0.0] - Major changes. Added OS version detection checks - detects OS version, release ID, ensures compatibility. Forces older file installation for Server 2022 to avoid issues after installing. Added DebugMode, DisableCleanup, Force. Renamed CheckForUpdates to CheckForUpdate. Improved output. Improved error handling. Improved comments. Improved code readability. Moved CheckForUpdate into function. Added PowerShellGalleryName. Renamed Get-OSVersion to Get-OSInfo. Moved architecture detection into Get-OSInfo. Renamed Get-NewestLink to Get-WingetDownloadUrl. Have Get-WingetDownloadUrl not get preview releases.
-[Version 3.0.1] - Updated Get-OSInfo function to fix issues when used on non-English systems. Improved error handling of "resources in use" error.
-[Version 3.0.2] - Added winget registration command for Windows 10 machines.
-[Version 3.1.0] - Added support for one-line installation with irm and iex compatible with $Force session variable. Added UpdateSelf command to automatically update the script to the latest version. Created short URL asheroto.com/winget.
-[Version 3.1.1] - Changed winget register command to run on all OS versions.
-[Version 3.2.0] - Added -ForceClose logic to relaunch the script in conhost.exe and automatically end active processes associated with winget that could interfere with the installation. Improved verbiage on winget already installed.
-[Version 3.2.1] - Fixed minor glitch when using -Version or -Help parameters.
-[Version 3.2.2] - Improved script exit functionality.
-[Version 3.2.3] - Improved -ForceClose window handling with x86 PowerShell process.
-[Version 3.2.4] - Improved verbiage for incompatible systems. Added importing Appx module on Windows Server with PowerShell 7+ systems to avoid error message.
-[Version 3.2.5] - Removed pause after script completion. Added optional Wait parameter to force script to wait several seconds for script output.
-[Version 3.2.6] - Improved ExitWithDelay function. Sometimes PowerShell will close the window accidentally, even when using the proper 'exit' command. Adjusted several closures for improved readability. Improved error code checking. Fixed glitch with -Wait param.
-[Version 3.2.7] - Addded ability to install for all users. Added checks for Windows Sandbox and administrative privileges.
-[Version 4.0.0] - Microsoft created some short URLs for winget. Removed a large portion of the script to use short URLs instead. Simplified and refactored. Switched debug param from DebugMode to Debug.
-[Version 4.0.1] - Fixed PowerShell help information.
-[Version 4.0.2] - Adjusted UpdateSelf function to reset PSGallery to original state if it was not trusted. Improved comments.
-[Version 4.0.3] - Updated UI.Xaml package as per winget-cli issue #4208.
-[Version 4.0.4] - Fixed detection for Windows multi-session.
-[Version 4.0.5] - Improved error handling when registering winget.
-[Version 4.1.0] - Support for Windows Server 2019 added by installing Visual C++ Redistributable.
-[Version 4.1.1] - Minor revisions to comments & debug output.
-[Version 4.1.2] - Implemented Visual C++ Redistributable version detection to ensure compatibility with winget.
-[Version 4.1.3] - Added additional debug output for Visual C++ Redistributable version detection.
-[Version 4.2.0] - Added environment path detection and addition if needed. Added NoExit parameter to prevent script from exiting after completion.
+[Version 1.0.0] - Initial Release.
 
 #>
 
 <#
 .SYNOPSIS
-	Downloads and installs the latest version of winget and its dependencies.
+    Gathers detailed system diagnostics, including configuration, hardware, network, and OS status.
 .DESCRIPTION
-	Downloads and installs the latest version of winget and its dependencies.
-
-This script is designed to be straightforward and easy to use, removing the hassle of manually downloading, installing, and configuring winget. This function should be run with administrative privileges.
+    This script provides a complete overview of system information, hardware specifications, network details, and pending reboot status. It is useful for IT professionals who need to quickly retrieve in-depth diagnostics on Windows systems.
 .EXAMPLE
-	winget-install
-.PARAMETER Debug
-    Enables debug mode, which shows additional information for debugging.
-.PARAMETER Force
-    Ensures installation of winget and its dependencies, even if already present.
-.PARAMETER ForceClose
-    Relaunches the script in conhost.exe and automatically ends active processes associated with winget that could interfere with the installation.
-.PARAMETER Wait
-    Forces the script to wait several seconds before exiting.
-.PARAMETER NoExit
-    Forces the script to wait indefinitely before exiting.
-.PARAMETER UpdateSelf
-    Updates the script to the latest version on PSGallery.
+    Get-SystemInfo
+    Runs the script to display detailed system information.
 .PARAMETER CheckForUpdate
-    Checks if there is an update available for the script.
+    Checks if an update is available for this script.
+.PARAMETER UpdateSelf
+    Updates the script to the latest version from PSGallery.
 .PARAMETER Version
-    Displays the version of the script.
+    Displays the current version of the script.
 .PARAMETER Help
-    Displays the full help information for the script.
+    Shows detailed help information for the script.
 .NOTES
-	Version      : 4.2.0
-	Created by   : asheroto
+    Version      : 1.0.0
+    Created by   : asheroto
 .LINK
-	Project Site: https://github.com/asheroto/winget-install
+    Project Site: https://github.com/asheroto/Get-SystemInfo
 #>
 [CmdletBinding()]
 param (
-    [switch]$Force,
-    [switch]$ForceClose,
     [switch]$CheckForUpdate,
-    [switch]$Wait,
-    [switch]$NoExit,
     [switch]$UpdateSelf,
     [switch]$Version,
     [switch]$Help
@@ -133,6 +80,136 @@ if ($PSBoundParameters.ContainsKey('Debug') -and $PSBoundParameters['Debug']) {
     $DebugPreference = 'Continue'
     $ConfirmPreference = 'None'
 }
+
+function Get-GitHubRelease {
+    <#
+        .SYNOPSIS
+        Fetches the latest release information of a GitHub repository.
+
+        .DESCRIPTION
+        This function uses the GitHub API to get information about the latest release of a specified repository, including its version and the date it was published.
+
+        .PARAMETER Owner
+        The GitHub username of the repository owner.
+
+        .PARAMETER Repo
+        The name of the repository.
+
+        .EXAMPLE
+        Get-GitHubRelease -Owner "asheroto" -Repo "Get-SystemInfo"
+        This command retrieves the latest release version and published datetime of the Get-SystemInfo repository owned by asheroto.
+    #>
+    [CmdletBinding()]
+    param (
+        [string]$Owner,
+        [string]$Repo
+    )
+    try {
+        $url = "https://api.github.com/repos/$Owner/$Repo/releases/latest"
+        $response = Invoke-RestMethod -Uri $url -ErrorAction Stop
+
+        $latestVersion = $response.tag_name
+        $publishedAt = $response.published_at
+
+        # Convert UTC time string to local time
+        $UtcDateTime = [DateTime]::Parse($publishedAt, [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::RoundtripKind)
+        $PublishedLocalDateTime = $UtcDateTime.ToLocalTime()
+
+        [PSCustomObject]@{
+            LatestVersion     = $latestVersion
+            PublishedDateTime = $PublishedLocalDateTime
+        }
+    } catch {
+        Write-Error "Unable to check for updates.`nError: $_"
+        exit 1
+    }
+}
+
+function CheckForUpdate {
+    param (
+        [string]$RepoOwner,
+        [string]$RepoName,
+        [version]$CurrentVersion,
+        [string]$PowerShellGalleryName
+    )
+
+    $Data = Get-GitHubRelease -Owner $RepoOwner -Repo $RepoName
+
+    Write-Output ""
+    Write-Output ("Repository:       {0,-40}" -f "https://github.com/$RepoOwner/$RepoName")
+    Write-Output ("Current Version:  {0,-40}" -f $CurrentVersion)
+    Write-Output ("Latest Version:   {0,-40}" -f $Data.LatestVersion)
+    Write-Output ("Published at:     {0,-40}" -f $Data.PublishedDateTime)
+
+    if ($Data.LatestVersion -gt $CurrentVersion) {
+        Write-Output ("Status:           {0,-40}" -f "A new version is available.")
+        Write-Output "`nOptions to update:"
+        Write-Output "- Download latest release: https://github.com/$RepoOwner/$RepoName/releases"
+        if ($PowerShellGalleryName) {
+            Write-Output "- Run: $RepoName -UpdateSelf"
+            Write-Output "- Run: Install-Script $PowerShellGalleryName -Force"
+        }
+    } else {
+        Write-Output ("Status:           {0,-40}" -f "Up to date.")
+    }
+    exit 0
+}
+
+function UpdateSelf {
+    try {
+        # Get PSGallery version of script
+        $psGalleryScriptVersion = (Find-Script -Name $PowerShellGalleryName).Version
+
+        # If the current version is less than the PSGallery version, update the script
+        if ($CurrentVersion -lt $psGalleryScriptVersion) {
+            Write-Output "Updating script to version $psGalleryScriptVersion..."
+
+            # Install NuGet PackageProvider if not already installed
+            if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
+                Install-PackageProvider -Name "NuGet" -Force
+            }
+
+            # Trust the PSGallery if not already trusted
+            $psRepoInstallationPolicy = (Get-PSRepository -Name 'PSGallery').InstallationPolicy
+            if ($psRepoInstallationPolicy -ne 'Trusted') {
+                Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted | Out-Null
+            }
+
+            # Update the script
+            Install-Script $PowerShellGalleryName -Force
+
+            # If PSGallery was not trusted, reset it to its original state
+            if ($psRepoInstallationPolicy -ne 'Trusted') {
+                Set-PSRepository -Name 'PSGallery' -InstallationPolicy $psRepoInstallationPolicy | Out-Null
+            }
+
+            Write-Output "Script updated to version $psGalleryScriptVersion."
+            exit 0
+        } else {
+            Write-Output "Script is already up to date."
+            exit 0
+        }
+    } catch {
+        Write-Output "An error occurred: $_"
+        exit 1
+    }
+}
+
+# ============================================================================ #
+# Initial checks
+# ============================================================================ #
+
+# First heading
+Write-Output "Get-SystemInfo $CurrentVersion"
+
+# Check for updates if -CheckForUpdate is specified
+if ($CheckForUpdate) { CheckForUpdate -RepoOwner $RepoOwner -RepoName $RepoName -CurrentVersion $CurrentVersion -PowerShellGalleryName $PowerShellGalleryName }
+
+# Update the script if -UpdateSelf is specified
+if ($UpdateSelf) { UpdateSelf }
+
+# Heading
+Write-Output "To check for updates, run Get-SystemInfo -CheckForUpdate"
 
 function Get-SystemInfo {
     function Write-Header {
@@ -279,9 +356,9 @@ function Get-LastShutdownEvents {
     Write-Section "Last Shutdown Events"
     try {
         $shutdownEvents = Get-WinEvent -FilterHashtable @{LogName = 'System'; ID = 1074 } -ErrorAction SilentlyContinue |
-                          Select-Object -Property TimeCreated, Message |
-                          Sort-Object -Property TimeCreated -Descending |
-                          Select-Object -First 5
+        Select-Object -Property TimeCreated, Message |
+        Sort-Object -Property TimeCreated -Descending |
+        Select-Object -First 5
 
         if ($shutdownEvents) {
             $shutdownEvents | ForEach-Object {
