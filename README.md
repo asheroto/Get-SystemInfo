@@ -34,7 +34,7 @@ Follow the prompts to complete the installation (you can tap `A` to accept all p
 
 **Note:** `-Force` is optional but recommended, as it will force the script to update if it is outdated. If you do not use `-Force`, it will _not_ overwrite the script if outdated.
 
-### Usage
+#### Usage
 
 ```powershell
 Get-SystemInfo
