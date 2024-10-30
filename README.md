@@ -22,13 +22,6 @@ This PowerShell script provides comprehensive system diagnostics by gathering de
 
 ### Method 1 - PowerShell Gallery
 
-> [!TIP]
->If you want to trust PSGallery so you aren't prompted each time you run this command, or if you're scripting this and want to ensure the script isn't interrupted the first time it runs...
->```powershell
->Install-PackageProvider -Name "NuGet" -Force
->Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
->```
-
 **This is the recommended method, because it always gets the public release that has been tested, it's easy to remember, and supports all parameters.**
 
 Open PowerShell as Administrator and type
