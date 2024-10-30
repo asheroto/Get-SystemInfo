@@ -13,9 +13,10 @@ This PowerShell script provides comprehensive system diagnostics by gathering de
 
 - **System Information**: Retrieves hostname, OS version and architecture, display version, installation date, last boot time, and uptime.
 - **Hardware and Firmware Details**: Shows the make and model of the computer, firmware manufacturer, version, and serial number.
+- **TPM Information**: Displays TPM activation status, enabled state, ownership status, and version.
 - **CPU Details**: Provides CPU model, speed, usage, core count, and logical processor count.
 - **Memory Details**: Displays total, used, and free RAM along with memory usage percentage. Additionally, lists details for each DIMM slot, including slot identifier, controller, size, and model/part number.
-- **Disk Usage**: For each drive, displays the device ID, volume label, total size, free space, used space, usage percentage, and make/model of the physical disk.
+- **Disk Usage**: For each drive, displays the device ID, volume label, total size, free space, used space, usage percentage, and model of the physical disk.
 - **Network Adapter Details**: Shows network adapter information, including adapter name, MAC address, IP address, subnet mask, and default gateway.
 - **Pending Reboot Check**: Detects pending reboots due to Windows Update, Component-Based Servicing, pending file rename operations, or cluster reboots.
 - **Last Shutdown Events**: Lists the five most recent system shutdown events for diagnostic purposes.
