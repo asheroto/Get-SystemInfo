@@ -42,6 +42,8 @@ Get-SystemInfo
 
 The script is published on [PowerShell Gallery](https://www.powershellgallery.com/packages/Get-SystemInfo) under `Get-SystemInfo`.
 
+---
+
 ### Method 2 - One Line Command (Runs Immediately)
 
 The URL [asheroto.com/Get-SystemInfo](https://asheroto.com/Get-SystemInfo) always redirects to the [latest code-signed release](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) of the script.
@@ -61,6 +63,8 @@ Alternatively, you can of course use the latest code-signed release URL directly
 ```powershell
 irm https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1 | iex
 ```
+
+---
 
 ### Method 3 - Download Locally and Run
 
