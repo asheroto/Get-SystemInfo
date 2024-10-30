@@ -96,7 +96,7 @@ As a more conventional approach, download the latest [Get-SystemInfo.ps1](https:
 
 ## Community & Contributions
 
-We value community contributions and encourage you to get involved. For issues, feature requests, or code contributions, please visit our GitHub repository.
+We value community contributions and encourage you to get involved. For issues, feature requests, or code contributions, please create a Pull Request.
 
 - If you come across any issues, open a new issue on GitHub.
 - To suggest new features, you can also submit an issue.
