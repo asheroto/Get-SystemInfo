@@ -44,6 +44,6 @@ After submitting a Pull Request, maintainers will review your contribution. You 
 
 ## License
 
-By contributing to Get-SystemInfo, you agree to license your contributions under the MIT License.
+By contributing to Get-SystemInfo, you agree to license your contributions under the GNU General Public License v3.0.
 
 Thank you for your contributions!
