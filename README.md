@@ -7,10 +7,31 @@
 
 # Get-SystemInfo
 
+- [Features](#features)
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Using the Get-SystemInfo Object](#using-the-get-systeminfo-object)
+- [Getting Started / Install / Download](#getting-started--install--download)
+  - [Method 1 - PowerShell Gallery](#method-1---powershell-gallery)
+    - [Usage](#usage-1)
+  - [Method 2 - One Line Command (Runs Immediately)](#method-2---one-line-command-runs-immediately)
+  - [Option A: asheroto.com short URL](#option-a-asherotocom-short-url)
+  - [Option B: direct release URL](#option-b-direct-release-url)
+  - [Method 3 - Download Locally and Run](#method-3---download-locally-and-run)
+- [Parameters](#parameters)
+- [Screenshots](#screenshots)
+- [Community \& Contributions](#community--contributions)
+- [Support](#support)
+
 This PowerShell script provides comprehensive system diagnostics by gathering detailed information on system configuration, hardware, network, and operating status. It is designed for Windows environments and is particularly useful for IT professionals and support staff who need rapid insight into system specs and performance.
 
 ## Features
 
+### Script Capabilities
+- **Dual Output Modes**: Supports both console output for quick diagnostics and object-based output for programmatic access and integration into other scripts.
+- **PowerShell Gallery Support**: Install and run the script directly as a function using `Get-SystemInfo` for streamlined usage.
+
+### Diagnostics Information Gathered
 - **System Information**: Retrieves hostname, OS version and architecture, display version, installation date, last boot time, and uptime.
 - **Hardware and Firmware Details**: Shows the make and model of the computer, firmware manufacturer, version, and serial number.
 - **TPM Information**: Displays TPM activation status, enabled state, ownership status, and version.
@@ -27,7 +48,81 @@ This PowerShell script provides comprehensive system diagnostics by gathering de
 - **PowerShell 5.1** or higher (pre-installed on Windows 10 and 11)
 - **Supported OS**: Windows 10, Windows 11, Server 2018, Server 2022
 
-## Setup
+## Usage
+
+You can use the script in two ways:
+
+1. **Run the Script Directly**  
+   If you’ve installed the script from the PowerShell Gallery, you can simply run the `Get-SystemInfo` command:
+```powershell
+Get-SystemInfo
+```
+This will display all system diagnostics, including hardware details, OS version, disk usage, and more, directly to the console.
+
+If you’re using the script file itself, execute it directly:
+```powershell
+.\Get-SystemInfo.ps1
+```
+2.  **Call the `Get-SystemInfo` Function**
+
+To work with the diagnostics programmatically, retrieve them as an object. If installed via the PowerShell Gallery, you can call the function directly:
+
+```powershell
+
+$info = Get-SystemInfo -Silent
+
+```
+
+Alternatively, if you have the script file, dot-source it to access the `Get-SystemInfo` function:
+
+```powershell
+
+. .\Get-SystemInfo.ps1 -Silent
+
+$info = Get-SystemInfo
+
+```
+
+This method allows access to specific sections of the diagnostics and integration into other scripts. See the next section for details.
+
+## Using the Get-SystemInfo Object
+
+When invoked programmatically, the script returns all diagnostic information as a structured object, allowing for seamless access and manipulation. Specific sections of the diagnostics can be retrieved by accessing the corresponding properties of the object.
+
+### `Get-SystemInfo` Object Properties
+| Property          | Description                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| `System`          | General system information, such as hostname.                                            |
+| `Hardware`        | Details about the system's make, model, serial number, and firmware.                     |
+| `TPM`             | Trusted Platform Module (TPM) status and version.                                        |
+| `OS`              | Operating system information, including version, architecture, install date, and uptime. |
+| `CPU`             | Processor details, including model, speed, usage, and core/thread count.                 |
+| `Memory`          | Memory details, including total, used, and per-DIMM slot information.                    |
+| `Disks`           | Information about logical disks, including size, free space, and usage.                  |
+| `Graphics`        | Graphics card details, including name, RAM, and driver information.                      |
+| `NetworkAdapters` | Network adapter details, including MAC address, IP, and speed.                           |
+| `PendingReboot`   | Information on pending reboots due to updates or other operations.                       |
+| `ShutdownEvents`  | Details of the last system shutdown events.                                              |
+
+### Examples
+
+- **OS Information**:
+  ```powershell
+  $info.OS
+  ```
+![image](https://github.com/user-attachments/assets/652017d0-da7a-4844-8aeb-8ad4ce102d59)
+- **CPU Information**:
+  ```powershell
+  $info.CPU
+  ```
+  ![image](https://github.com/user-attachments/assets/7b10939e-bb39-4654-9f2b-379eb0b79e51)
+- **Memory Details**:
+  ```powershell
+  $info.Memory
+  ```
+![image](https://github.com/user-attachments/assets/ea169875-c86e-4f2f-aca0-7b5026e3c110)
+
+## Getting Started / Install / Download
 
 ### Method 1 - PowerShell Gallery
 
@@ -90,12 +185,13 @@ As a more conventional approach, download the latest [Get-SystemInfo.ps1](https:
 
 **No parameters are required** to run the script, but there are some optional parameters to use if needed.
 
-| Parameter         | Description                                            |
-| ----------------- | ------------------------------------------------------ |
-| `-CheckForUpdate` | Checks if there is an update available for the script. |
-| `-UpdateSelf`     | Updates the script to the latest version.              |
-| `-Version`        | Displays the version of the script.                    |
-| `-Help`           | Displays the full help information for the script.     |
+| Parameter         | Description                                                        |
+| ----------------- | ------------------------------------------------------------------ |
+| `-CheckForUpdate` | Checks if there is an update available for the script.             |
+| `-UpdateSelf`     | Updates the script to the latest version.                          |
+| `-Version`        | Displays the version of the script.                                |
+| `-Help`           | Displays the full help information for the script.                 |
+| `-Silent`         | Suppresses output when the script is run, useful for dot-sourcing. |
 
 ## Screenshots
 

@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.0.2
+.VERSION 2.0.0
 
 .GUID 21f7b5b3-f9bd-4611-a846-9372c3a89275
 
@@ -16,6 +16,7 @@
 [Version 1.0.0] - Initial Release.
 [Version 1.0.1] - Added TPM information support.
 [Version 1.0.2] - Added graphics card information support.
+[Version 2.0.0] - Improved section headers and adjusted output for dot-sourcing.
 
 #>
 
@@ -26,417 +27,262 @@
     This script provides a complete overview of system information, hardware specifications, network details, and pending reboot status. It is useful for IT professionals who need to quickly retrieve in-depth diagnostics on Windows systems.
 .EXAMPLE
     Get-SystemInfo
-    Runs the script to display detailed system information.
-.PARAMETER CheckForUpdate
-    Checks if an update is available for this script.
-.PARAMETER UpdateSelf
-    Updates the script to the latest version from PSGallery.
-.PARAMETER Version
-    Displays the current version of the script.
-.PARAMETER Help
-    Shows detailed help information for the script.
+    Runs the script and returns detailed system information.
+.EXAMPLE
+    $info = .\script.ps1
+    $info.TPM
+    Accesses the TPM information from the returned object.
+.EXAMPLE
+    .\script.ps1
+    Displays all information in table format.
 .NOTES
-    Version      : 1.0.2
+    Version      : 2.0.0
     Created by   : asheroto
 .LINK
     Project Site: https://github.com/asheroto/Get-SystemInfo
 #>
+
 [CmdletBinding()]
 param (
     [switch]$CheckForUpdate,
     [switch]$UpdateSelf,
     [switch]$Version,
     [switch]$Help,
-    [string]$OutputFile
+    [switch]$Silent
 )
 
 # Script information
-$CurrentVersion = '1.0.2'
+$CurrentVersion = '2.0.0'
 $RepoOwner = 'asheroto'
 $RepoName = 'Get-SystemInfo'
 $PowerShellGalleryName = 'Get-SystemInfo'
 
 # Preferences
-$ProgressPreference = 'SilentlyContinue' # Suppress progress bar (makes downloading super fast)
-$ConfirmPreference = 'None' # Suppress confirmation prompts
+$ProgressPreference = 'SilentlyContinue'
+$ConfirmPreference = 'None'
 
-# Display version if -Version is specified
 if ($Version.IsPresent) {
     $CurrentVersion
     exit 0
 }
 
-# Display full help if -Help is specified
 if ($Help) {
     Get-Help -Name $MyInvocation.MyCommand.Source -Full
     exit 0
 }
 
-# Display $PSVersionTable and Get-Host if -Verbose is specified
-if ($PSBoundParameters.ContainsKey('Verbose') -and $PSBoundParameters['Verbose']) {
-    $PSVersionTable
-    Get-Host
-}
-
-# Set debug preferences if -Debug is specified
-if ($PSBoundParameters.ContainsKey('Debug') -and $PSBoundParameters['Debug']) {
-    $DebugPreference = 'Continue'
-    $ConfirmPreference = 'None'
-}
-
-function Get-GitHubRelease {
-    <#
-        .SYNOPSIS
-        Fetches the latest release information of a GitHub repository.
-
-        .DESCRIPTION
-        This function uses the GitHub API to get information about the latest release of a specified repository, including its version and the date it was published.
-
-        .PARAMETER Owner
-        The GitHub username of the repository owner.
-
-        .PARAMETER Repo
-        The name of the repository.
-
-        .EXAMPLE
-        Get-GitHubRelease -Owner "asheroto" -Repo "Get-SystemInfo"
-        This command retrieves the latest release version and published datetime of the Get-SystemInfo repository owned by asheroto.
-    #>
-    [CmdletBinding()]
-    param (
-        [string]$Owner,
-        [string]$Repo
-    )
-    try {
-        $url = "https://api.github.com/repos/$Owner/$Repo/releases/latest"
-        $response = Invoke-RestMethod -Uri $url -ErrorAction Stop
-
-        $latestVersion = $response.tag_name
-        $publishedAt = $response.published_at
-
-        # Convert UTC time string to local time
-        $UtcDateTime = [DateTime]::Parse($publishedAt, [System.Globalization.CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::RoundtripKind)
-        $PublishedLocalDateTime = $UtcDateTime.ToLocalTime()
-
-        [PSCustomObject]@{
-            LatestVersion     = $latestVersion
-            PublishedDateTime = $PublishedLocalDateTime
-        }
-    } catch {
-        Write-Error "Unable to check for updates.`nError: $_"
-        exit 1
-    }
-}
-
-function CheckForUpdate {
-    param (
-        [string]$RepoOwner,
-        [string]$RepoName,
-        [version]$CurrentVersion,
-        [string]$PowerShellGalleryName
-    )
-
-    $Data = Get-GitHubRelease -Owner $RepoOwner -Repo $RepoName
-
-    Write-Output ""
-    Write-Output ("Repository:       {0,-40}" -f "https://github.com/$RepoOwner/$RepoName")
-    Write-Output ("Current Version:  {0,-40}" -f $CurrentVersion)
-    Write-Output ("Latest Version:   {0,-40}" -f $Data.LatestVersion)
-    Write-Output ("Published at:     {0,-40}" -f $Data.PublishedDateTime)
-
-    if ($Data.LatestVersion -gt $CurrentVersion) {
-        Write-Output ("Status:           {0,-40}" -f "A new version is available.")
-        Write-Output "`nOptions to update:"
-        Write-Output "- Download latest release: https://github.com/$RepoOwner/$RepoName/releases"
-        if ($PowerShellGalleryName) {
-            Write-Output "- Run: $RepoName -UpdateSelf"
-            Write-Output "- Run: Install-Script $PowerShellGalleryName -Force"
-        }
-    } else {
-        Write-Output ("Status:           {0,-40}" -f "Up to date.")
-    }
-    exit 0
-}
-
-function UpdateSelf {
-    try {
-        # Get PSGallery version of script
-        $psGalleryScriptVersion = (Find-Script -Name $PowerShellGalleryName).Version
-
-        # If the current version is less than the PSGallery version, update the script
-        if ($CurrentVersion -lt $psGalleryScriptVersion) {
-            Write-Output "Updating script to version $psGalleryScriptVersion..."
-
-            # Install NuGet PackageProvider if not already installed
-            if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue)) {
-                Install-PackageProvider -Name "NuGet" -Force
-            }
-
-            # Trust the PSGallery if not already trusted
-            $psRepoInstallationPolicy = (Get-PSRepository -Name 'PSGallery').InstallationPolicy
-            if ($psRepoInstallationPolicy -ne 'Trusted') {
-                Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted | Out-Null
-            }
-
-            # Update the script
-            Install-Script $PowerShellGalleryName -Force
-
-            # If PSGallery was not trusted, reset it to its original state
-            if ($psRepoInstallationPolicy -ne 'Trusted') {
-                Set-PSRepository -Name 'PSGallery' -InstallationPolicy $psRepoInstallationPolicy | Out-Null
-            }
-
-            Write-Output "Script updated to version $psGalleryScriptVersion."
-            exit 0
-        } else {
-            Write-Output "Script is already up to date."
-            exit 0
-        }
-    } catch {
-        Write-Output "An error occurred: $_"
-        exit 1
-    }
-}
-
-# ============================================================================ #
-# Initial checks
-# ============================================================================ #
-
-# First heading
-Write-Output "Get-SystemInfo $CurrentVersion"
-
-# Check for updates if -CheckForUpdate is specified
-if ($CheckForUpdate) { CheckForUpdate -RepoOwner $RepoOwner -RepoName $RepoName -CurrentVersion $CurrentVersion -PowerShellGalleryName $PowerShellGalleryName }
-
-# Update the script if -UpdateSelf is specified
-if ($UpdateSelf) { UpdateSelf }
-
-# Heading
-Write-Output "To check for updates, run Get-SystemInfo -CheckForUpdate"
-
 function Get-SystemInfo {
-    function Write-Header {
-        param (
-            [string]$Header,
-            [string]$Value
-        )
-        Write-Host "${Header}: " -ForegroundColor Green -NoNewline
-        Write-Output $Value
+    $result = [PSCustomObject]@{
+        System          = [PSCustomObject]@{
+            Hostname = $env:COMPUTERNAME
+        }
+        Hardware        = [PSCustomObject]@{
+            MakeModel            = $null
+            SerialNumber         = $null
+            FirmwareManufacturer = $null
+            FirmwareVersion      = $null
+        }
+        TPM             = [PSCustomObject]@{
+            IsActivated = $null
+            IsEnabled   = $null
+            IsOwned     = $null
+            Version     = $null
+        }
+        OS              = [PSCustomObject]@{
+            Version        = $null
+            DisplayVersion = $null
+            Architecture   = $null
+            InstallDate    = $null
+            LastBootTime   = $null
+            Uptime         = $null
+        }
+        CPU             = [PSCustomObject]@{
+            MakeModel = $null
+            SpeedGHz  = $null
+            Usage     = $null
+            Cores     = $null
+            Threads   = $null
+        }
+        Memory          = [PSCustomObject]@{
+            TotalGB      = $null
+            UsedGB       = $null
+            UsagePercent = $null
+            DIMMs        = @()
+        }
+        Disks           = @()
+        Graphics        = @()
+        NetworkAdapters = @()
+        PendingReboot   = @()
+        ShutdownEvents  = @()
     }
 
-    # System Information
-    Write-Section "System Information"
-    $hostname = $env:COMPUTERNAME
-    $os = Get-CimInstance -ClassName Win32_OperatingSystem
+    # Populate Hardware Information
     $cs = Get-CimInstance -ClassName Win32_ComputerSystem
     $bios = Get-CimInstance -ClassName Win32_BIOS
+    $result.Hardware.MakeModel = "$($cs.Manufacturer) $($cs.Model)"
+    $result.Hardware.SerialNumber = $bios.SerialNumber
+    $result.Hardware.FirmwareManufacturer = $bios.Manufacturer
+    $result.Hardware.FirmwareVersion = $bios.SMBIOSBIOSVersion
 
-    Write-Header "Hostname" $hostname
-
-    # Hardware and Firmware Details
-    Write-Section "Hardware and Firmware Details"
-    Write-Header "Make/Model" "$($cs.Manufacturer) $($cs.Model)"
-    Write-Header "Serial Number" $bios.SerialNumber
-    Write-Header "Firmware Manufacturer" $bios.Manufacturer
-    Write-Header "Firmware Version" $bios.SMBIOSBIOSVersion
-
-    # TPM
-    Write-Section "TPM Information"
+    # Populate TPM Information
     $tpm = Get-CimInstance -Namespace "root\cimv2\security\microsofttpm" -ClassName Win32_Tpm
-
     if ($tpm) {
-        Write-Header "TPM Activated" $tpm.IsActivated_InitialValue
-        Write-Header "TPM Enabled" $tpm.IsEnabled_InitialValue
-        Write-Header "TPM Owned" $tpm.IsOwned_InitialValue
-        Write-Header "TPM Version" ($tpm.SpecVersion -split ',')[0]
-    } else {
-        Write-Output "No TPM detected."
+        $result.TPM.IsActivated = $tpm.IsActivated_InitialValue
+        $result.TPM.IsEnabled = $tpm.IsEnabled_InitialValue
+        $result.TPM.IsOwned = $tpm.IsOwned_InitialValue
+        $result.TPM.Version = ($tpm.SpecVersion -split ',')[0]
     }
 
-    # OS Details
-    Write-Section "OS Details"
+    # Populate OS Information
+    $os = Get-CimInstance -ClassName Win32_OperatingSystem
     $uptime = (Get-Date) - $os.LastBootUpTime
     $displayVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion
+    $result.OS.Version = $os.Caption
+    $result.OS.DisplayVersion = $displayVersion
+    $result.OS.Architecture = $os.OSArchitecture
+    $result.OS.InstallDate = $os.InstallDate
+    $result.OS.LastBootTime = $os.LastBootUpTime
+    $result.OS.Uptime = "$([math]::Floor($uptime.TotalDays)) days, $($uptime.Hours) hours, $($uptime.Minutes) minutes"
 
-    Write-Header "OS Version" $os.Caption
-    Write-Header "OS Display Version" $displayVersion
-    Write-Header "OS Architecture" $os.OSArchitecture
-    Write-Header "OS Install Date" $os.InstallDate
-    Write-Header "OS Last Boot Time" $os.LastBootUpTime
-    Write-Header "System Uptime" "$([math]::Floor($uptime.TotalDays)) days, $($uptime.Hours) hours, $($uptime.Minutes) minutes"
-
-    # CPU Details
-    Write-Section "CPU Details"
+    # Populate CPU Information
     $cpu = Get-CimInstance -ClassName Win32_Processor
-    $cpuSpeedGHz = [math]::Round($cpu.MaxClockSpeed / 1000, 2)
+    $result.CPU.MakeModel = $cpu.Name
+    $result.CPU.SpeedGHz = [math]::Round($cpu.MaxClockSpeed / 1000, 2)
+    $result.CPU.Usage = "$(($cpu | Measure-Object -Property LoadPercentage -Average).Average)%"
+    $result.CPU.Cores = $cpu.NumberOfCores
+    $result.CPU.Threads = $cpu.NumberOfLogicalProcessors
 
-    Write-Header "CPU Make/Model" $cpu.Name
-    Write-Header "CPU Speed" "$cpuSpeedGHz GHz"
-    Write-Header "CPU Usage" "$(($cpu | Measure-Object -Property LoadPercentage -Average).Average)%"
-    Write-Header "CPU Cores" $cpu.NumberOfCores
-    Write-Header "CPU Threads (Logical Processors)" $cpu.NumberOfLogicalProcessors
-
-    # Memory details
-    Write-Section "Memory Details"
-
-    # Total memory summary
-    $totalRAM = [math]::Round($cs.TotalPhysicalMemory / 1GB, 2)
-    $freeMem = [math]::Round($os.FreePhysicalMemory / 1MB, 2)
-    $usedMem = $totalRAM - $freeMem
-    $memUsage = [math]::Round(($usedMem / $totalRAM) * 100, 2)
-
-    Write-Header "Total RAM (GB)" $totalRAM
-    Write-Header "Used RAM (GB)" $usedMem
-    Write-Header "Free RAM (GB)" $freeMem
-    Write-Header "Memory Usage (%)" $memUsage
-
-    # Collect RAM DIMM information for table display
-    $dimmDetails = Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
-        # Remove "Controller" from DeviceLocator for DIMM Number and Controller
-        $dimmSlot = $_.DeviceLocator -replace "Controller", ""
-        $controller = if ($dimmSlot -match "(\d+)-") { $matches[1] } else { "N/A" }
-        $slot = if ($dimmSlot -match "-(DIMM\w+)") { $matches[1] } else { $dimmSlot }
-
-        # Determine size and model details
-        $dimmSizeGB = [math]::Round($_.Capacity / 1GB, 2)
-        $makeModel = if ($_.Model) { $_.Model } elseif ($_.PartNumber) { $_.PartNumber } else { "Unknown" }
-
-        # Output each DIMM detail as a custom object
+    # Populate Memory Information
+    $result.Memory.TotalGB = [math]::Round($cs.TotalPhysicalMemory / 1GB, 2)
+    $result.Memory.UsedGB = $result.Memory.TotalGB - [math]::Round($os.FreePhysicalMemory / 1MB, 2)
+    $result.Memory.UsagePercent = [math]::Round(($result.Memory.UsedGB / $result.Memory.TotalGB) * 100, 2)
+    $result.Memory.DIMMs = Get-CimInstance -ClassName Win32_PhysicalMemory | ForEach-Object {
         [PSCustomObject]@{
-            "DIMM Number" = $dimmSlot
-            "Controller"  = $controller
-            "Slot"        = $slot
-            "RAM (GB)"    = $dimmSizeGB
-            "Model/Part"  = $makeModel
+            DIMMNumber   = $_.DeviceLocator
+            SizeGB       = if ($_.Capacity) { [math]::Round($_.Capacity / 1GB, 2) } else { "N/A" }
+            Model        = if ($_.PartNumber) { $_.PartNumber } else { "Unknown" }
+            SpeedMHz     = if ($_.Speed) { $_.Speed } else { "Unknown" }
+            Manufacturer = if ($_.Manufacturer) { $_.Manufacturer } else { "Unknown" }
         }
     }
 
-    # Display the table
-    $dimmDetails | Format-Table -AutoSize
-
-    # Disk usage in table format
-    Write-Section "Disk Usage"
-    $diskInfo = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" | ForEach-Object {
-        $totalSizeGB = [math]::Round($_.Size / 1GB, 2)
-        $freeSpaceGB = [math]::Round($_.FreeSpace / 1GB, 2)
-        $usedSpaceGB = $totalSizeGB - $freeSpaceGB
-        $driveUsage = [math]::Round(($usedSpaceGB / $totalSizeGB) * 100, 2)
-
-        # Retrieve associated physical disk information
-        $physicalDisk = Get-CimInstance -Query "ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='$($_.DeviceID)'} WHERE AssocClass=Win32_LogicalDiskToPartition" |
-        ForEach-Object { Get-CimInstance -Query "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='$($_.DeviceID)'} WHERE AssocClass=Win32_DiskDriveToDiskPartition" }
-
-        $makeModel = if ($physicalDisk.Model) { $physicalDisk.Model } else { "Unknown" }
-
-        # Create a custom object for each disk
+    # Populate Disk Information
+    $result.Disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" | ForEach-Object {
         [PSCustomObject]@{
-            Drive             = $_.DeviceID
-            "Volume Label"    = $_.VolumeName
-            "Total Size (GB)" = $totalSizeGB
-            "Free Space (GB)" = $freeSpaceGB
-            "Used Space (GB)" = $usedSpaceGB
-            "Usage (%)"       = $driveUsage
-            "Make/Model"      = $makeModel
+            Drive        = $_.DeviceID
+            TotalSizeGB  = [math]::Round($_.Size / 1GB, 2)
+            FreeSpaceGB  = [math]::Round($_.FreeSpace / 1GB, 2)
+            UsagePercent = [math]::Round((($_.Size - $_.FreeSpace) / $_.Size) * 100, 2)
         }
     }
 
-    # Display the table
-    $diskInfo | Format-Table -AutoSize
-
-    # Graphics Card Information
-    Write-Section "Graphics Card Information"
-    $graphicsCard = Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
+    # Populate Graphics Card Information
+    $result.Graphics = Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
         [PSCustomObject]@{
-            "Name"             = $_.Name
-            "Adapter RAM (GB)" = [math]::round($_.AdapterRAM / 1GB, 2)
-            "Driver Version"   = $_.DriverVersion
-            "Driver Date"      = $_.DriverDate
-            "Status"           = $_.Status
+            Name          = $_.Name
+            RAMGB         = [math]::Round($_.AdapterRAM / 1GB, 2)
+            DriverVersion = $_.DriverVersion
+            DriverDate    = $_.DriverDate
         }
     }
 
-    # Display the table
-    $graphicsCard | Format-Table -AutoSize
-
-    # Network Adapter Details
-    Write-Section "Network Adapter Details"
-
-    # Retrieve network adapter information and format it as a table
-    $networkInfo = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled -eq $true } | ForEach-Object {
-        $adapterName = $_.Description
-        $macAddress = $_.MACAddress
-        $ipAddresses = $_.IPAddress -join ", "
-        $subnetMasks = $_.IPSubnet -join ", "
-        $defaultGateway = if ($_.DefaultIPGateway) { $_.DefaultIPGateway -join ", " } else { "N/A" }
-
-        # Create a custom object for each network adapter
+    # Populate Network Adapters
+    $result.NetworkAdapters = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled -eq $true } | ForEach-Object {
         [PSCustomObject]@{
-            "Adapter"         = $adapterName
-            "MAC Address"     = $macAddress
-            "IP Address(es)"  = $ipAddresses
-            "Subnet Mask(s)"  = $subnetMasks
-            "Default Gateway" = $defaultGateway
+            Adapter     = $_.Description
+            IP          = $_.IPAddress -join ", "
+            MAC         = $_.MACAddress
+            SpeedMbps   = if ($_.Speed) { [math]::Round($_.Speed / 1MB, 2) } else { "Unknown" }
+            DHCPEnabled = $_.DHCPEnabled
         }
     }
 
-    # Display the table
-    $networkInfo | Format-Table -AutoSize
-}
-
-function Get-LastShutdownEvents {
-    Write-Section "Last Shutdown Events"
-    try {
-        $shutdownEvents = Get-WinEvent -FilterHashtable @{LogName = 'System'; ID = 1074 } -ErrorAction SilentlyContinue |
-        Select-Object -Property TimeCreated, Message |
-        Sort-Object -Property TimeCreated -Descending |
-        Select-Object -First 5
-
-        if ($shutdownEvents) {
-            $shutdownEvents | ForEach-Object {
-                Write-Output "$($_.TimeCreated): $($_.Message)"
-            }
-        } else {
-            Write-Output "No shutdown events found."
-        }
-    } catch {
-        Write-Output "An error occurred while retrieving shutdown events: $_"
-    }
-}
-
-function Get-PendingRebootReasons {
-    Write-Section "Pending Reboot Check"
-    $PendingRebootReasons = @()
-
+    # Populate Pending Reboot Information
+    $pendingReboot = @()
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
-        $PendingRebootReasons += "Windows Update"
+        $pendingReboot += "Windows Update"
     }
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending") {
-        $PendingRebootReasons += "Component-Based Servicing"
+        $pendingReboot += "Component-Based Servicing"
     }
     if ((Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager").PendingFileRenameOperations) {
-        $PendingRebootReasons += "Pending File Rename Operations"
+        $pendingReboot += "Pending File Rename Operations"
     }
-    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Cluster\PendingReboot") {
-        $PendingRebootReasons += "Cluster Pending Reboot"
-    }
+    $result.PendingReboot = $pendingReboot
 
-    if ($PendingRebootReasons.Count -gt 0) {
-        Write-Output "Pending reboot reasons:"
-        $PendingRebootReasons | ForEach-Object { Write-Output "- $_" }
-    } else {
-        Write-Output "No pending reboot."
-    }
+    # Populate Shutdown Events
+    $result.ShutdownEvents = Get-WinEvent -FilterHashtable @{ LogName = 'System'; ID = 1074 } |
+    Select-Object -First 5 -Property TimeCreated, Message
+
+    return $result
 }
 
-function Write-Section($text) {
-    Write-Output ""
-    Write-Output ("#" * ($text.Length + 4))
-    Write-Output "# $text #"
-    Write-Output ("#" * ($text.Length + 4))
-    Write-Output ""
+if ($CheckForUpdate) {
+    CheckForUpdate -RepoOwner $RepoOwner -RepoName $RepoName -CurrentVersion $CurrentVersion -PowerShellGalleryName $PowerShellGalleryName
+}
+
+if ($UpdateSelf) {
+    UpdateSelf
 }
 
 # Main execution
-Get-SystemInfo
-Get-PendingRebootReasons
-Get-LastShutdownEvents
+if (-not $Silent) {
+    $info = Get-SystemInfo
+
+    function Write-Section($text) {
+        <#
+            .SYNOPSIS
+            Prints a text block surrounded by a section divider for enhanced output readability.
+
+            .DESCRIPTION
+            This function takes a string input and prints it to the console, surrounded by a section divider made of hash characters.
+            It is designed to enhance the readability of console output.
+
+            .PARAMETER text
+            The text to be printed within the section divider.
+
+            .EXAMPLE
+            Write-Section "Downloading Files..."
+            This command prints the text "Downloading Files..." surrounded by a section divider.
+        #>
+        Write-Output ""
+        Write-Output ("#" * ($text.Length + 4))
+        Write-Output "# $text #"
+        Write-Output ("#" * ($text.Length + 4))
+        Write-Output ""
+    }
+
+    Write-Section "System Information"
+    $info.System | Format-List
+
+    Write-Section "Hardware Information"
+    $info.Hardware | Format-List
+
+    Write-Section "TPM Information"
+    $info.TPM | Format-List
+
+    Write-Section "OS Information"
+    $info.OS | Format-List
+
+    Write-Section "CPU Information"
+    $info.CPU | Format-List
+
+    Write-Section "Memory Information"
+    $info.Memory | Format-List
+    $info.Memory.DIMMs | Format-Table -AutoSize
+
+    Write-Section "Disk Information"
+    $info.Disks | Format-Table -AutoSize
+
+    Write-Section "Graphics Information"
+    $info.Graphics | Format-Table -AutoSize
+
+    Write-Section "Network Adapters"
+    $info.NetworkAdapters | Format-Table -AutoSize
+
+    Write-Section "Pending Reboot Information"
+    $info.PendingReboot | ForEach-Object { Write-Output "- $_" }
+
+    Write-Section "Last Shutdown Events"
+    $info.ShutdownEvents | Format-Table -AutoSize
+}
