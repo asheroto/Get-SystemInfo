@@ -9,6 +9,10 @@
 
 ![1](https://github.com/user-attachments/assets/6bbb1464-6fd4-42d6-8860-03ede4066865)
 
+This PowerShell script provides comprehensive system diagnostics by gathering detailed information on system configuration, hardware, network, and operating status. It is designed for Windows environments and is particularly useful for IT professionals and support staff who need rapid insight into system specs and performance.
+
+## Table of Contents
+
 - [Features](#features)
   - [Script Capabilities](#script-capabilities)
   - [Diagnostics Information Gathered](#diagnostics-information-gathered)
@@ -28,8 +32,6 @@
 - [Screenshots](#screenshots)
 - [Community \& Contributions](#community--contributions)
 - [Support](#support)
-
-This PowerShell script provides comprehensive system diagnostics by gathering detailed information on system configuration, hardware, network, and operating status. It is designed for Windows environments and is particularly useful for IT professionals and support staff who need rapid insight into system specs and performance.
 
 ## Features
 
