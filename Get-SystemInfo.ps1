@@ -334,7 +334,7 @@ if (-not $Silent) {
     $info.NetworkAdapters | Format-Table -AutoSize
 
     Write-Section "Pending Reboot Information"
-    $info.PendingReboot | ForEach-Object { Write-Output "- $_" }
+    $info.PendingReboot | Format-Table -AutoSize
 
     Write-Section "Last Shutdown Events"
     $info.ShutdownEvents | Format-Table -AutoSize
