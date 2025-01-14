@@ -7,6 +7,8 @@
 
 # Get-SystemInfo
 
+![1](https://github.com/user-attachments/assets/6bbb1464-6fd4-42d6-8860-03ede4066865)
+
 - [Features](#features)
   - [Script Capabilities](#script-capabilities)
   - [Diagnostics Information Gathered](#diagnostics-information-gathered)
@@ -199,7 +201,6 @@ As a more conventional approach, download the latest [Get-SystemInfo.ps1](https:
 
 ## Screenshots
 
-![1](https://github.com/user-attachments/assets/6bbb1464-6fd4-42d6-8860-03ede4066865)
 ![2](https://github.com/user-attachments/assets/a58d7b0a-2c11-41cd-932f-6f087132a9d8)
 ![3](https://github.com/user-attachments/assets/9e4546df-b43c-4d70-a18b-6ce6d2173b03)
 
