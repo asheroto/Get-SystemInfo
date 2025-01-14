@@ -123,6 +123,7 @@ function Get-SystemInfo {
             Version        = $null
             DisplayVersion = $null
             Architecture   = $null
+            Type           = $null
             InstallDate    = $null
             LastBootTime   = $null
             Uptime         = $null
@@ -168,12 +169,22 @@ function Get-SystemInfo {
     $os = Get-CimInstance -ClassName Win32_OperatingSystem
     $uptime = (Get-Date) - $os.LastBootUpTime
     $displayVersion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion).DisplayVersion
+
     $result.OS.Version = $os.Caption
     $result.OS.DisplayVersion = $displayVersion
     $result.OS.Architecture = $os.OSArchitecture
     $result.OS.InstallDate = $os.InstallDate
     $result.OS.LastBootTime = $os.LastBootUpTime
     $result.OS.Uptime = "$([math]::Floor($uptime.TotalDays)) days, $($uptime.Hours) hours, $($uptime.Minutes) minutes"
+
+    # Determine OS type (Workstation/Server)
+    $result.OS.Type = if ($os.ProductType -eq 1) {
+        "Workstation"
+    } elseif ($os.ProductType -eq 2 -or $os.ProductType -eq 3) {
+        "Server"
+    } else {
+        "Unknown"
+    }
 
     # Populate CPU Information
     $cpu = Get-CimInstance -ClassName Win32_Processor
