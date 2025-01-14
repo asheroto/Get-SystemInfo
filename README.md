@@ -13,7 +13,6 @@ This PowerShell script provides information on system configuration, hardware sp
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Features](#features)
   - [Script Capabilities](#script-capabilities)
   - [Diagnostics Information Gathered](#diagnostics-information-gathered)
