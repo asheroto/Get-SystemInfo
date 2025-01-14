@@ -101,9 +101,9 @@ irm asheroto.com/Get-SystemInfo | iex
 
 #### Option B: Use Parameters with One Line Command
 
-To include parameters such as `-Force`, use the following command:
+To include parameters such as `-Silent`, use the following command:
 ```powershell
-&([ScriptBlock]::Create((irm asheroto.com/Get-SystemInfo))) -Force
+&([ScriptBlock]::Create((irm asheroto.com/Get-SystemInfo))) -Silent
 ```
 
 #### Option C: Direct Release URL
