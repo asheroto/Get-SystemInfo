@@ -187,19 +187,19 @@ When invoked programmatically, the script returns all diagnostic information as 
 ### Examples
 
 - **OS Information**:
-  ```powershell
-  $info.OS
-  ```
+```powershell
+$info.OS
+```
 ![image](https://github.com/user-attachments/assets/652017d0-da7a-4844-8aeb-8ad4ce102d59)
 - **CPU Information**:
-  ```powershell
-  $info.CPU
-  ```
-  ![image](https://github.com/user-attachments/assets/7b10939e-bb39-4654-9f2b-379eb0b79e51)
+```powershell
+$info.CPU
+```
+![image](https://github.com/user-attachments/assets/7b10939e-bb39-4654-9f2b-379eb0b79e51)
 - **Memory Details**:
-  ```powershell
-  $info.Memory
-  ```
+```powershell
+$info.Memory
+```
 ![image](https://github.com/user-attachments/assets/ea169875-c86e-4f2f-aca0-7b5026e3c110)
 
 ## Additional Screenshots
