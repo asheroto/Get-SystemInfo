@@ -114,9 +114,9 @@ function Get-SystemInfo {
             FirmwareVersion      = $null
         }
         TPM             = [PSCustomObject]@{
-            IsActivated = $null
-            IsEnabled   = $null
-            IsOwned     = $null
+            IsActivated = false
+            IsEnabled   = false
+            IsOwned     = false
             Version     = $null
         }
         OS              = [PSCustomObject]@{
