@@ -90,23 +90,28 @@ The script is published on [PowerShell Gallery](https://www.powershellgallery.co
 
 The URL [asheroto.com/Get-SystemInfo](https://asheroto.com/Get-SystemInfo) always redirects to the [latest code-signed release](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) of the script.
 
-If you just need to run the basic script without any parameters, you can use the following one-line command:
+Due to the way PowerShell handles piped input, using parameters directly in this one-line command isn't possible. However, if you need to use parameters, you can execute the script as a command block using `&` and `[ScriptBlock]::Create`. Below are two options:
 
-#### Option A: asheroto.com short URL
+#### Option A: Basic Execution (No Parameters)
 
+If you just need to run the basic script without any parameters:
 ```powershell
 irm asheroto.com/Get-SystemInfo | iex
 ```
 
-#### Option B: direct release URL
+#### Option B: Use Parameters with One Line Command
 
-Alternatively, you can of course use the latest code-signed release URL directly:
+To include parameters such as `-Force`, use the following command:
+```powershell
+&([ScriptBlock]::Create((irm asheroto.com/Get-SystemInfo))) -Force
+```
 
+#### Option C: Direct Release URL
+
+Alternatively, you can use the direct release URL for the latest version:
 ```powershell
 irm https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1 | iex
 ```
-
----
 
 ### Method 3 - Download Locally and Run
 
