@@ -17,6 +17,7 @@ This PowerShell script provides comprehensive system diagnostics by gathering de
 - **CPU Details**: Provides CPU model, speed, usage, core count, and logical processor count.
 - **Memory Details**: Displays total, used, and free RAM along with memory usage percentage. Additionally, lists details for each DIMM slot, including slot identifier, controller, size, and model/part number.
 - **Disk Usage**: For each drive, displays the device ID, volume label, total size, free space, used space, usage percentage, and model of the physical disk.
+- **Graphics Card Information**: Displays GPU details, including the name, adapter RAM (GB), driver version, driver date, and status.
 - **Network Adapter Details**: Shows network adapter information, including adapter name, MAC address, IP address, subnet mask, and default gateway.
 - **Pending Reboot Check**: Detects pending reboots due to Windows Update, Component-Based Servicing, pending file rename operations, or cluster reboots.
 - **Last Shutdown Events**: Lists the five most recent system shutdown events for diagnostic purposes.
