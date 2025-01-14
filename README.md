@@ -22,8 +22,8 @@ This PowerShell script provides information on system configuration, hardware sp
   - [Method 1 - PowerShell Gallery](#method-1---powershell-gallery)
     - [Usage](#usage)
   - [Method 2 - One Line Command (Runs Immediately)](#method-2---one-line-command-runs-immediately)
-  - [Option A: asheroto.com short URL](#option-a-asherotocom-short-url)
-  - [Option B: direct release URL](#option-b-direct-release-url)
+    - [Option A: asheroto.com short URL](#option-a-asherotocom-short-url)
+    - [Option B: direct release URL](#option-b-direct-release-url)
   - [Method 3 - Download Locally and Run](#method-3---download-locally-and-run)
 - [Parameters](#parameters)
 - [Usage](#usage-1)
@@ -89,13 +89,13 @@ The URL [asheroto.com/Get-SystemInfo](https://asheroto.com/Get-SystemInfo) alway
 
 If you just need to run the basic script without any parameters, you can use the following one-line command:
 
-### Option A: asheroto.com short URL
+#### Option A: asheroto.com short URL
 
 ```powershell
 irm asheroto.com/Get-SystemInfo | iex
 ```
 
-### Option B: direct release URL
+#### Option B: direct release URL
 
 Alternatively, you can of course use the latest code-signed release URL directly:
 
