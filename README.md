@@ -9,27 +9,28 @@
 
 ![1](https://github.com/user-attachments/assets/6bbb1464-6fd4-42d6-8860-03ede4066865)
 
-This PowerShell script provides information on system configuration, hardware, network, and operating status. It is particularly useful for IT professionals and support staff who need rapid insight into system specs and performance.
+This PowerShell script provides information on system configuration, hardware specifications, network details, operating system status, and more. It is particularly useful for IT professionals and support staff who need rapid insight into system specs and performance.
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Features](#features)
   - [Script Capabilities](#script-capabilities)
   - [Diagnostics Information Gathered](#diagnostics-information-gathered)
 - [Requirements](#requirements)
-- [Usage](#usage)
-- [Using the Get-SystemInfo Object](#using-the-get-systeminfo-object)
-  - [`Get-SystemInfo` Object Properties](#get-systeminfo-object-properties)
-  - [Examples](#examples)
 - [Getting Started / Install / Download](#getting-started--install--download)
   - [Method 1 - PowerShell Gallery](#method-1---powershell-gallery)
-    - [Usage](#usage-1)
+    - [Usage](#usage)
   - [Method 2 - One Line Command (Runs Immediately)](#method-2---one-line-command-runs-immediately)
   - [Option A: asheroto.com short URL](#option-a-asherotocom-short-url)
   - [Option B: direct release URL](#option-b-direct-release-url)
   - [Method 3 - Download Locally and Run](#method-3---download-locally-and-run)
 - [Parameters](#parameters)
-- [Screenshots](#screenshots)
+- [Usage](#usage-1)
+- [Using the Get-SystemInfo Object](#using-the-get-systeminfo-object)
+  - [`Get-SystemInfo` Object Properties](#get-systeminfo-object-properties)
+  - [Examples](#examples)
+- [Additional Screenshots](#additional-screenshots)
 - [Community \& Contributions](#community--contributions)
 - [Support](#support)
 
@@ -55,6 +56,77 @@ This PowerShell script provides information on system configuration, hardware, n
 
 - **PowerShell 5.1** or higher (pre-installed on Windows 10 and 11)
 - **Supported OS**: Windows 10, Windows 11, Server 2018, Server 2022
+
+## Getting Started / Install / Download
+
+### Method 1 - PowerShell Gallery
+
+**This is the recommended method, because it always gets the public release that has been tested, it's easy to remember, and supports all parameters.**
+
+Open PowerShell as Administrator and type
+
+```powershell
+Install-Script Get-SystemInfo -Force
+```
+
+Follow the prompts to complete the installation (you can tap `A` to accept all prompts or `Y` to select them individually.
+
+**Note:** `-Force` is optional but recommended, as it will force the script to update if it is outdated. If you do not use `-Force`, it will _not_ overwrite the script if outdated.
+
+#### Usage
+
+```powershell
+Get-SystemInfo
+```
+
+The script is published on [PowerShell Gallery](https://www.powershellgallery.com/packages/Get-SystemInfo) under `Get-SystemInfo`.
+
+---
+
+### Method 2 - One Line Command (Runs Immediately)
+
+The URL [asheroto.com/Get-SystemInfo](https://asheroto.com/Get-SystemInfo) always redirects to the [latest code-signed release](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) of the script.
+
+If you just need to run the basic script without any parameters, you can use the following one-line command:
+
+### Option A: asheroto.com short URL
+
+```powershell
+irm asheroto.com/Get-SystemInfo | iex
+```
+
+### Option B: direct release URL
+
+Alternatively, you can of course use the latest code-signed release URL directly:
+
+```powershell
+irm https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1 | iex
+```
+
+---
+
+### Method 3 - Download Locally and Run
+
+As a more conventional approach, download the latest [Get-SystemInfo.ps1](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) from [Releases](https://github.com/asheroto/Get-SystemInfo/releases), then run the script as follows:
+
+```powershell
+.\Get-SystemInfo.ps1
+```
+
+> [!TIP]
+> If for some reason your PowerShell window closes at the end of the script and you don't want it to, or don't want your other scripts to be interrupted, you can wrap the command in a `powershell "COMMAND HERE"`. For example, `powershell "irm asheroto.com/Get-SystemInfo | iex"`.
+
+## Parameters
+
+**No parameters are required** to run the script, but there are some optional parameters to use if needed.
+
+| Parameter         | Description                                                        |
+| ----------------- | ------------------------------------------------------------------ |
+| `-CheckForUpdate` | Checks if there is an update available for the script.             |
+| `-UpdateSelf`     | Updates the script to the latest version.                          |
+| `-Version`        | Displays the version of the script.                                |
+| `-Help`           | Displays the full help information for the script.                 |
+| `-Silent`         | Suppresses output when the script is run, useful for dot-sourcing. |
 
 ## Usage
 
@@ -130,78 +202,7 @@ When invoked programmatically, the script returns all diagnostic information as 
   ```
 ![image](https://github.com/user-attachments/assets/ea169875-c86e-4f2f-aca0-7b5026e3c110)
 
-## Getting Started / Install / Download
-
-### Method 1 - PowerShell Gallery
-
-**This is the recommended method, because it always gets the public release that has been tested, it's easy to remember, and supports all parameters.**
-
-Open PowerShell as Administrator and type
-
-```powershell
-Install-Script Get-SystemInfo -Force
-```
-
-Follow the prompts to complete the installation (you can tap `A` to accept all prompts or `Y` to select them individually.
-
-**Note:** `-Force` is optional but recommended, as it will force the script to update if it is outdated. If you do not use `-Force`, it will _not_ overwrite the script if outdated.
-
-#### Usage
-
-```powershell
-Get-SystemInfo
-```
-
-The script is published on [PowerShell Gallery](https://www.powershellgallery.com/packages/Get-SystemInfo) under `Get-SystemInfo`.
-
----
-
-### Method 2 - One Line Command (Runs Immediately)
-
-The URL [asheroto.com/Get-SystemInfo](https://asheroto.com/Get-SystemInfo) always redirects to the [latest code-signed release](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) of the script.
-
-If you just need to run the basic script without any parameters, you can use the following one-line command:
-
-### Option A: asheroto.com short URL
-
-```powershell
-irm asheroto.com/Get-SystemInfo | iex
-```
-
-### Option B: direct release URL
-
-Alternatively, you can of course use the latest code-signed release URL directly:
-
-```powershell
-irm https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1 | iex
-```
-
----
-
-### Method 3 - Download Locally and Run
-
-As a more conventional approach, download the latest [Get-SystemInfo.ps1](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) from [Releases](https://github.com/asheroto/Get-SystemInfo/releases), then run the script as follows:
-
-```powershell
-.\Get-SystemInfo.ps1
-```
-
-> [!TIP]
-> If for some reason your PowerShell window closes at the end of the script and you don't want it to, or don't want your other scripts to be interrupted, you can wrap the command in a `powershell "COMMAND HERE"`. For example, `powershell "irm asheroto.com/Get-SystemInfo | iex"`.
-
-## Parameters
-
-**No parameters are required** to run the script, but there are some optional parameters to use if needed.
-
-| Parameter         | Description                                                        |
-| ----------------- | ------------------------------------------------------------------ |
-| `-CheckForUpdate` | Checks if there is an update available for the script.             |
-| `-UpdateSelf`     | Updates the script to the latest version.                          |
-| `-Version`        | Displays the version of the script.                                |
-| `-Help`           | Displays the full help information for the script.                 |
-| `-Silent`         | Suppresses output when the script is run, useful for dot-sourcing. |
-
-## Screenshots
+## Additional Screenshots
 
 ![2](https://github.com/user-attachments/assets/a58d7b0a-2c11-41cd-932f-6f087132a9d8)
 ![3](https://github.com/user-attachments/assets/9e4546df-b43c-4d70-a18b-6ce6d2173b03)
