@@ -1,6 +1,6 @@
 <#PSScriptInfo
 
-.VERSION 1.0.1
+.VERSION 1.0.2
 
 .GUID 21f7b5b3-f9bd-4611-a846-9372c3a89275
 
@@ -15,6 +15,7 @@
 .RELEASENOTES
 [Version 1.0.0] - Initial Release.
 [Version 1.0.1] - Added TPM information support.
+[Version 1.0.2] - Added graphics card information support.
 
 #>
 
@@ -35,7 +36,7 @@
 .PARAMETER Help
     Shows detailed help information for the script.
 .NOTES
-    Version      : 1.0.1
+    Version      : 1.0.2
     Created by   : asheroto
 .LINK
     Project Site: https://github.com/asheroto/Get-SystemInfo
@@ -50,7 +51,7 @@ param (
 )
 
 # Script information
-$CurrentVersion = '1.0.1'
+$CurrentVersion = '1.0.2'
 $RepoOwner = 'asheroto'
 $RepoName = 'Get-SystemInfo'
 $PowerShellGalleryName = 'Get-SystemInfo'
@@ -341,6 +342,21 @@ function Get-SystemInfo {
 
     # Display the table
     $diskInfo | Format-Table -AutoSize
+
+    # Graphics Card Information
+    Write-Section "Graphics Card Information"
+    $graphicsCard = Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
+        [PSCustomObject]@{
+            "Name"             = $_.Name
+            "Adapter RAM (GB)" = [math]::round($_.AdapterRAM / 1GB, 2)
+            "Driver Version"   = $_.DriverVersion
+            "Driver Date"      = $_.DriverDate
+            "Status"           = $_.Status
+        }
+    }
+
+    # Display the table
+    $graphicsCard | Format-Table -AutoSize
 
     # Network Adapter Details
     Write-Section "Network Adapter Details"
