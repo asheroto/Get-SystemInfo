@@ -8,9 +8,13 @@
 # Get-SystemInfo
 
 - [Features](#features)
+  - [Script Capabilities](#script-capabilities)
+  - [Diagnostics Information Gathered](#diagnostics-information-gathered)
 - [Requirements](#requirements)
 - [Usage](#usage)
 - [Using the Get-SystemInfo Object](#using-the-get-systeminfo-object)
+  - [`Get-SystemInfo` Object Properties](#get-systeminfo-object-properties)
+  - [Examples](#examples)
 - [Getting Started / Install / Download](#getting-started--install--download)
   - [Method 1 - PowerShell Gallery](#method-1---powershell-gallery)
     - [Usage](#usage-1)
