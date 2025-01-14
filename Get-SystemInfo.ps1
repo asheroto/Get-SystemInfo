@@ -16,30 +16,61 @@
 [Version 1.0.0] - Initial Release.
 [Version 1.0.1] - Added TPM information support.
 [Version 1.0.2] - Added graphics card information support.
-[Version 2.0.0] - Improved section headers and adjusted output for dot-sourcing.
-
-#>
+[Version 2.0.0] - Redesigned for improved functionality with robust support for object-oriented usage, allowing easy access to specific diagnostic sections.
 
 <#
 .SYNOPSIS
     Gathers detailed system diagnostics, including configuration, hardware, network, and OS status.
+
 .DESCRIPTION
-    This script provides a complete overview of system information, hardware specifications, network details, and pending reboot status. It is useful for IT professionals who need to quickly retrieve in-depth diagnostics on Windows systems.
+    This function provides a complete overview of system information, hardware specifications, network details, and pending reboot status. It is designed to be used either as a standalone script for console output or programmatically as a function to retrieve diagnostics as an object.
+
+.PARAMETER CheckForUpdate
+    Checks if there is an update available for the script. The latest version information is retrieved from GitHub.
+
+.PARAMETER UpdateSelf
+    Updates the script to the latest version available in the PowerShell Gallery.
+
+.PARAMETER Version
+    Displays the current version of the script.
+
+.PARAMETER Help
+    Displays detailed help information for the script, including usage examples.
+
+.PARAMETER Silent
+    Suppresses console output when running the script. Useful for retrieving the diagnostics as an object without any visible output.
+
 .EXAMPLE
-    Get-SystemInfo
-    Runs the script and returns detailed system information.
+    .\Get-SystemInfo.ps1
+    Runs the script and displays all diagnostics in a well-formatted console output.
+
 .EXAMPLE
-    $info = .\script.ps1
-    $info.TPM
-    Accesses the TPM information from the returned object.
+    . .\Get-SystemInfo.ps1 -Silent
+    $info = Get-SystemInfo
+    Retrieves all diagnostics as an object for programmatic access.
+
 .EXAMPLE
-    .\script.ps1
-    Displays all information in table format.
+    Get-SystemInfo -CheckForUpdate
+    Checks for updates to the script.
+
+.EXAMPLE
+    Get-SystemInfo -UpdateSelf
+    Updates the script to the latest version from the PowerShell Gallery.
+
+.INPUTS
+    None.
+
+.OUTPUTS
+    [PSCustomObject]
+    Returns a custom object containing system diagnostics, including sections such as System, Hardware, TPM, OS, CPU, Memory, Disks, Graphics, NetworkAdapters, PendingReboot, and ShutdownEvents.
+
 .NOTES
-    Version      : 2.0.0
-    Created by   : asheroto
+    Author: asheroto
+    Version: 2.0.0
+    Repository: https://github.com/asheroto/Get-SystemInfo
+
 .LINK
-    Project Site: https://github.com/asheroto/Get-SystemInfo
+    https://github.com/asheroto/Get-SystemInfo
 #>
 
 [CmdletBinding()]
@@ -198,17 +229,39 @@ function Get-SystemInfo {
     }
 
     # Populate Pending Reboot Information
-    $pendingReboot = @()
+    $result.PendingReboot = @()
+
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired") {
-        $pendingReboot += "Windows Update"
+        $result.PendingReboot += [PSCustomObject]@{
+            Source  = "Windows Update"
+            Details = "Reboot required for pending updates."
+            Path    = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired"
+        }
     }
+
     if (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending") {
-        $pendingReboot += "Component-Based Servicing"
+        $result.PendingReboot += [PSCustomObject]@{
+            Source  = "Component-Based Servicing"
+            Details = "Reboot required for servicing stack changes."
+            Path    = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending"
+        }
     }
+
     if ((Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager").PendingFileRenameOperations) {
-        $pendingReboot += "Pending File Rename Operations"
+        $result.PendingReboot += [PSCustomObject]@{
+            Source  = "Pending File Rename Operations"
+            Details = "Reboot required for file operations."
+            Path    = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager"
+        }
     }
-    $result.PendingReboot = $pendingReboot
+
+    if (Test-Path "HKLM:\SOFTWARE\Microsoft\Cluster\PendingReboot") {
+        $result.PendingReboot += [PSCustomObject]@{
+            Source  = "Cluster Pending Reboot"
+            Details = "Cluster changes require a reboot."
+            Path    = "HKLM:\SOFTWARE\Microsoft\Cluster\PendingReboot"
+        }
+    }
 
     # Populate Shutdown Events
     $result.ShutdownEvents = Get-WinEvent -FilterHashtable @{ LogName = 'System'; ID = 1074 } |
