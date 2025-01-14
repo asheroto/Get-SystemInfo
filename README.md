@@ -21,9 +21,8 @@ This PowerShell script provides information on system configuration, hardware sp
   - [Method 1 - PowerShell Gallery](#method-1---powershell-gallery)
     - [Usage](#usage)
   - [Method 2 - One Line Command (Runs Immediately)](#method-2---one-line-command-runs-immediately)
-    - [Option A: Basic Execution (No Parameters)](#option-a-basic-execution-no-parameters)
-    - [Option B: Use Parameters with One Line Command](#option-b-use-parameters-with-one-line-command)
-    - [Option C: Direct Release URL](#option-c-direct-release-url)
+    - [Option A: asheroto.com short URL](#option-a-asherotocom-short-url)
+    - [Option B: direct release URL](#option-b-direct-release-url)
   - [Method 3 - Download Locally and Run](#method-3---download-locally-and-run)
 - [Parameters](#parameters)
 - [Usage](#usage-1)
@@ -90,28 +89,23 @@ The script is published on [PowerShell Gallery](https://www.powershellgallery.co
 
 The URL [asheroto.com/Get-SystemInfo](https://asheroto.com/Get-SystemInfo) always redirects to the [latest code-signed release](https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1) of the script.
 
-Due to the way PowerShell handles piped input, using parameters directly in this one-line command isn't possible. However, if you need to use parameters, you can execute the script as a command block using `&` and `[ScriptBlock]::Create`. Below are two options:
+If you just need to run the basic script without any parameters, you can use the following one-line command:
 
-#### Option A: Basic Execution (No Parameters)
+#### Option A: asheroto.com short URL
 
-If you just need to run the basic script without any parameters:
 ```powershell
 irm asheroto.com/Get-SystemInfo | iex
 ```
 
-#### Option B: Use Parameters with One Line Command
+#### Option B: direct release URL
 
-To include parameters such as `-Silent`, use the following command:
-```powershell
-&([ScriptBlock]::Create((irm asheroto.com/Get-SystemInfo))) -Silent
-```
+Alternatively, you can of course use the latest code-signed release URL directly:
 
-#### Option C: Direct Release URL
-
-Alternatively, you can use the direct release URL for the latest version:
 ```powershell
 irm https://github.com/asheroto/Get-SystemInfo/releases/latest/download/Get-SystemInfo.ps1 | iex
 ```
+
+---
 
 ### Method 3 - Download Locally and Run
 
