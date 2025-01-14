@@ -211,19 +211,19 @@ function Get-SystemInfo {
     $result.Graphics = Get-CimInstance -ClassName Win32_VideoController | ForEach-Object {
         [PSCustomObject]@{
             Name          = $_.Name
-            RAMGB         = [math]::Round($_.AdapterRAM / 1GB, 2)
+            MemoryGB      = [math]::Round($_.AdapterRAM / 1GB, 2)
             DriverVersion = $_.DriverVersion
             DriverDate    = $_.DriverDate
         }
     }
 
-    # Populate Network Adapters
     $result.NetworkAdapters = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled -eq $true } | ForEach-Object {
+        $adapter = Get-CimInstance -Query "SELECT * FROM Win32_NetworkAdapter WHERE Index = $($_.Index)"
         [PSCustomObject]@{
             Adapter     = $_.Description
             IP          = $_.IPAddress -join ", "
             MAC         = $_.MACAddress
-            SpeedMbps   = if ($_.Speed) { [math]::Round($_.Speed / 1MB, 2) } else { "Unknown" }
+            SpeedMbps   = if ($adapter.Speed) { [math]::Round($adapter.Speed / 1e6, 2) } else { "Unknown" }
             DHCPEnabled = $_.DHCPEnabled
         }
     }
