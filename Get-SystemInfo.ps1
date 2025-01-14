@@ -332,7 +332,7 @@ if (-not $Silent) {
     $info.CPU | Format-List
 
     Write-Section "Memory Information"
-    $info.Memory | Format-List
+    $info.Memory | Select-Object -Property * -ExcludeProperty DIMMs | Format-List
     $info.Memory.DIMMs | Format-Table -AutoSize
 
     Write-Section "Disk Information"
